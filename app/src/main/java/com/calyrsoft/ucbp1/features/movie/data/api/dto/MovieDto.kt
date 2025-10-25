@@ -6,5 +6,6 @@ data class MovieDto(
     @SerializedName("poster_path")
     val pathUrl: String,
     val title: String,
-    val id: Int
+    val id: Int,
+    val overview: String
 )

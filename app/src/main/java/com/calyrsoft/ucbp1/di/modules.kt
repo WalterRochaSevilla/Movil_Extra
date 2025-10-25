@@ -15,6 +15,11 @@ import com.calyrsoft.ucbp1.features.github.data.repository.GithubRepository
 import com.calyrsoft.ucbp1.features.github.domain.repository.IGithubRepository
 import com.calyrsoft.ucbp1.features.github.domain.usecase.FindByNickNameUseCase
 import com.calyrsoft.ucbp1.features.github.presentation.GithubViewModel
+import com.calyrsoft.ucbp1.features.maintenance.data.datasource.RemoteConfigDataSource
+import com.calyrsoft.ucbp1.features.maintenance.data.repository.MaintenanceRepositoryImpl
+import com.calyrsoft.ucbp1.features.maintenance.domain.repository.MaintenanceRepository
+import com.calyrsoft.ucbp1.features.maintenance.domain.usecase.CheckMaintenanceUseCase
+import com.calyrsoft.ucbp1.features.maintenance.presentation.viewmodel.MaintenanceViewModel
 import com.calyrsoft.ucbp1.features.movie.data.api.MovieService
 import com.calyrsoft.ucbp1.features.movie.data.datasource.MovieLocalDataSource
 import com.calyrsoft.ucbp1.features.movie.data.datasource.MovieRemoteDataSource
@@ -111,9 +116,15 @@ val appModule = module {
     single { MovieRemoteDataSource(get(), get(named("apiKey"))) }
     single { MovieLocalDataSource(get(named("movieDao"))) }
     single<IMoviesRepository> { MovieRepository(get(), get()) }
+
     factory { FetchPopularMoviesUseCase(get()) }
     factory { RateMovieUseCase(get()) }
+
     viewModel{ PopularMoviesViewModel(get(), get()) }
 
     viewModel { NavigationViewModel() }
+    single { RemoteConfigDataSource() }
+    single<MaintenanceRepository> { MaintenanceRepositoryImpl(get()) }
+    factory { CheckMaintenanceUseCase(get()) }
+    viewModel { MaintenanceViewModel(get()) }
 }

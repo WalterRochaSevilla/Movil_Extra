@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +31,8 @@ import com.calyrsoft.ucbp1.features.movie.domain.model.MovieModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun PopularMoviesView( movies: List<MovieModel>, viewModel: PopularMoviesViewModel = koinViewModel()) {
+fun PopularMoviesView( movies: List<MovieModel>, viewModel: PopularMoviesViewModel = koinViewModel(),
+                       navigateToDetail: (movie: MovieModel) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -38,13 +40,13 @@ fun PopularMoviesView( movies: List<MovieModel>, viewModel: PopularMoviesViewMod
         contentPadding = PaddingValues(16.dp)
     ) {
         items(movies.size) {
-            CardMovie(movie = movies[it], viewModel)
+            CardMovie(movie = movies[it], viewModel, navigateToDetail)
         }
     }
 }
 
 @Composable
-fun CardMovie(movie: MovieModel, viewModel: PopularMoviesViewModel) {
+fun CardMovie(movie: MovieModel, viewModel: PopularMoviesViewModel, navigateToDetail: (MovieModel) -> Unit) {
     OutlinedCard(
         modifier = Modifier
             .padding(4.dp)
@@ -77,37 +79,30 @@ fun CardMovie(movie: MovieModel, viewModel: PopularMoviesViewModel) {
             StarRating(rating = movie.rating, onRatingChanged = {
                 viewModel.rateMovie(movie.id, it)
             })
+            TextButton(onClick = {
+                navigateToDetail(movie)
+            }) {
+                Text("Ver detalle")
+            }
         }
     }
 }
 
 @Composable
 fun StarRating(
-    rating: Int,
+    rating: Int, // de 0 a 5
     onRatingChanged: (Int) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         for (i in 1..5) {
-            IconButton(
-                onClick = {
-                    if (i == 1 && rating == 1) {
-                        onRatingChanged(0)
-                    } else {
-                        onRatingChanged(i)
-                    }
-                },
-                modifier = Modifier.size(20.dp)
-            ) {
+            IconButton(onClick = { onRatingChanged(i) }) {
                 Icon(
                     imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.Star,
                     contentDescription = "$i estrellas",
-                    tint = if (i <= rating) Color(0xFFFFC107) else Color.Gray,
+                    tint = if (i <= rating) Color(0xFFFFC107) else Color.Gray, // amarillo y gris
                     modifier = Modifier.size(32.dp)
                 )
             }
